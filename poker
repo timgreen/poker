@@ -18,7 +18,20 @@ commands:
    fetch      Get package from repo
    push       Push new package to repo
    version    Show poker version
+   help       Show this help
 EOF
 }
 
-cmd_help
+cmd_version() {
+  echo "poker version $POKER_VERSION"
+}
+
+command=$1
+shift
+
+case $command in
+  version)  cmd_version;;
+  help)     cmd_help;;
+  *)        cmd_help
+	    exit 2;;
+esac
