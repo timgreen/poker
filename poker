@@ -87,7 +87,7 @@ cmd_sync() {
   prepare_repo
 
   GIT_DIR="$(repo_path)" git fetch --progress
-  GIT_DIR="$(repo_path)" git fetch -t --progress
+  GIT_DIR="$(repo_path)" git fetch --tags --progress
 }
 
 cmd_fetch() {
