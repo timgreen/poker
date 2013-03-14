@@ -1,0 +1,24 @@
+#!/bin/bash
+
+POKER_VERSION="0.1"
+POKER_NAME="$0"
+POKER_HOME=~/.poker/
+
+# TODO(timgreen): opt for POKER_HOME
+# TODO(timgreen): command for setup
+# TODO(timgreen): command for config
+
+cmd_help() {
+  cat << EOF
+usage: $POKER_NAME [options...] <command> [<args>]
+
+commands:
+
+   list       List managed packages
+   fetch      Get package from repo
+   push       Push new package to repo
+   version    Show poker version
+EOF
+}
+
+cmd_help
