@@ -1,12 +1,42 @@
 #!/bin/bash
+# vim: set foldmethod=marker shiftwidth=2 st=2 ts=2:
 
 POKER_VERSION="0.1"
 POKER_NAME="$0"
-POKER_HOME=~/.poker/
+POKER_HOME=$HOME/.poker/
+POKER_REPO_URL=""
 
 # TODO(timgreen): opt for POKER_HOME
 # TODO(timgreen): command for setup
 # TODO(timgreen): command for config
+
+## lib {{{
+
+config_path() {
+  readlink -m "$POKER_HOME/config"
+}
+
+repo_path() {
+  readlink -m "$POKER_HOME/repo/"
+}
+
+read_config() {
+  [ -r "$(config_path)" ] || { echo "Config not found: $(config_path)"; exit 1; }
+  POKER_REPO_URL=$(git config -f $(config_path) --get config.repo)
+  (( $? != 0 )) && echo "Error when reading 'config.repo' from config" && exit 2
+}
+
+prepare_repo() {
+  [ -r "$(repo_path)" ] && return
+
+  echo "Init poker repo ..."
+  cd "$(dirname $(repo_path))"
+  git clone --bare $POKER_REPO_URL "$(basename $(repo_path))"
+}
+
+## }}} lib
+
+## Commands {{{
 
 cmd_help() {
   cat << EOF
@@ -26,10 +56,34 @@ cmd_version() {
   echo "poker version $POKER_VERSION"
 }
 
+cmd_list() {
+  read_config
+  prepare_repo
+
+  if (( $# == 0 )); then
+    echo "Avaliable packages:"
+    git ls-remote -h $(repo_path) | sed 's/^.\+\srefs\/heads\//  /' |  \
+        grep -v '\bmaster$'
+
+    exit 0
+  elif (( $# == 1)); then
+    pkg_name="$1"
+    echo "Avaliable versions for package '$pkg_name':"
+    git ls-remote --exit-code -t $(repo_path) "$pkg_name/*" | sed "s/^.\+\srefs\/tags\/$pkg_name\//  /"
+    # TODO:
+  else
+    cmd_help list
+    exit 1
+  fi
+}
+
+## }}} Commands
+
 command=$1
 shift
 
 case $command in
+  list)     cmd_list "$@";;
   version)  cmd_version;;
   help)     cmd_help;;
   *)        cmd_help
