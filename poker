@@ -20,6 +20,10 @@ repo_path() {
   readlink -m "$POKER_HOME/repo/"
 }
 
+tmp_repo_path() {
+  readlink -m "$POKER_HOME/tmp_repo/"
+}
+
 read_config() {
   [ -r "$(config_path)" ] || { echo "Config not found: $(config_path)"; exit 1; }
   POKER_REPO_URL=$(git config -f $(config_path) --get config.repo)
@@ -105,8 +109,41 @@ cmd_fetch() {
   GIT_DIR="$(repo_path)" git archive --format=tar -o "$output" "$pkg_name/$version"
 }
 
+cmd_push() {
+  cmd_sync
+
+  if (( $# != 3 )); then
+    cmd_help push
+    exit 1
+  fi
+
+  pkg_name="$1"
+  version="$2"
+  pkg_dir=$(readlink -m "$3")
+
+  set -e
+  rm -fr "$(tmp_repo_path)"
+  mkdir -p "$(tmp_repo_path)"
+  cd "$(tmp_repo_path)"
+  set +e
+  git init
+  git remote add poker_local "$(repo_path)"
+  git remote add repo "$POKER_REPO_URL"
+  git checkout -B $pkg_name
+  git fetch poker_local $pkg_name
+  git fetch repo $pkg_name || git fetch repo master
+  git reset --hard FETCH_HEAD
+  git rm -fr *
+  cp -r "$pkg_dir/"* .
+  git add *
+  git commit --allow-empty -m "$pkg_name:$version"
+  git tag "$pkg_name/$version"
+  git push --tags repo $pkg_name:$pkg_name
+}
+
 ## }}} Commands
 
+## main {{{
 command=$1
 shift
 
@@ -114,8 +151,10 @@ case $command in
   list)     cmd_list "$@";;
   sync)     cmd_sync;;
   fetch)    cmd_fetch "$@";;
+  push)     cmd_push "$@";;
   version)  cmd_version;;
-  help)     cmd_help;;
+  help)     cmd_help "$@";;
   *)        cmd_help
-	    exit 2;;
+            exit 2;;
 esac
+## }}} main
