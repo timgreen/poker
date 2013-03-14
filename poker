@@ -44,6 +44,7 @@ usage: $POKER_NAME [options...] <command> [<args>]
 
 commands:
 
+   sync       Sync with remote repo
    list       List managed packages
    fetch      Get package from repo
    push       Push new package to repo
@@ -77,6 +78,15 @@ cmd_list() {
   fi
 }
 
+cmd_sync() {
+  read_config
+  prepare_repo
+
+  cd "$(repo_path)"
+  git fetch --progress
+  git fetch -t --progress
+}
+
 ## }}} Commands
 
 command=$1
@@ -84,6 +94,7 @@ shift
 
 case $command in
   list)     cmd_list "$@";;
+  sync)     cmd_sync;;
   version)  cmd_version;;
   help)     cmd_help;;
   *)        cmd_help
