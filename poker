@@ -10,20 +10,20 @@ POKER_WRAPPER=$POKER_SELF_REPO_PATH/poker
 POKER_BIN=$POKER_SELF_REPO_PATH/poker_bin
 
 sync() {
-	[ -r $POKER_SELF_REPO_PATH ] || {
-	  mkdir -p $POKER_SELF_REPO_PATH
-		cd "$(dirname $POKER_SELF_REPO_PATH)"
-		git clone $POKER_SELF_REPO_URL "$(basename $POKER_SELF_REPO_PATH)"
+  [ -r $POKER_SELF_REPO_PATH ] || {
+    mkdir -p $POKER_SELF_REPO_PATH
+    cd "$(dirname $POKER_SELF_REPO_PATH)"
+    git clone $POKER_SELF_REPO_URL "$(basename $POKER_SELF_REPO_PATH)"
   }
 
-	# TODO(timgreen): skip sync if last sync is close enough.
-	cd $POKER_SELF_REPO_PATH
-	git pull > /dev/null
+  # TODO(timgreen): skip sync if last sync is close enough.
+  cd $POKER_SELF_REPO_PATH
+  git pull > /dev/null
 
-	[ -r $POKER_BIN ] || {
+  [ -r $POKER_BIN ] || {
     echo "Please upgrade poker in order to continue"
-		echo
-		echo "cp $POKER_WRAPPER $WRAPPER_NAME"
+    echo
+    echo "cp $POKER_WRAPPER $WRAPPER_NAME"
     exit 1
   }
 }
