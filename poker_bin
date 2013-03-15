@@ -75,8 +75,8 @@ cmd_list() {
   elif (( $# == 1)); then
     pkg_name="$1"
     echo "Avaliable versions for package '$pkg_name':"
-    GIT_DIR="$(repo_path)" git ls-remote --exit-code -t origin "$pkg_name/*" | sed "s/^.\+\srefs\/tags\/$pkg_name\//  /"
-    # TODO:
+    GIT_DIR="$(repo_path)" git ls-remote -t origin "$pkg_name/*" | sed "s/^.\+\srefs\/tags\/$pkg_name\//  /"
+		# TODO(timgreen): legacy git (1.7) doesn't support --exit-code
   else
     cmd_help list
     exit 1
