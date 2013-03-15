@@ -2,7 +2,6 @@
 # vim: set foldmethod=marker shiftwidth=2 st=2 ts=2:
 
 POKER_VERSION="0.1"
-POKER_NAME="$0"
 POKER_HOME=$HOME/.poker/
 POKER_REPO_URL=""
 
@@ -36,6 +35,8 @@ prepare_repo() {
   echo "Init poker repo ..."
   cd "$(dirname $(repo_path))"
   git clone --bare $POKER_REPO_URL "$(basename $(repo_path))"
+  cd "$(repo_path)"
+  git remote add origin $POKER_REPO_URL
 }
 
 ## }}} lib
@@ -44,7 +45,7 @@ prepare_repo() {
 
 cmd_help() {
   cat << EOF
-usage: $POKER_NAME [options...] <command> [<args>]
+usage: poker [options...] <command> [<args>]
 
 commands:
 
