@@ -32,11 +32,13 @@ read_config() {
 prepare_repo() {
   [ -r "$(repo_path)" ] && return
 
+  OLD_PWD=$PWD
   echo "Init poker repo ..."
   cd "$(dirname $(repo_path))"
   git clone --bare $POKER_REPO_URL "$(basename $(repo_path))"
   cd "$(repo_path)"
   git remote add origin $POKER_REPO_URL
+  cd $OLD_PWD
 }
 
 ## }}} lib
@@ -138,7 +140,7 @@ cmd_push() {
   git fetch repo $pkg_name || git fetch repo master
   git reset --hard FETCH_HEAD
   git rm -fr *
-  [ -r "$pkg_dir" ] && cp -r "$pkg_dir/"* . || { echo "$pkg_dir not found"; exit 2; }
+  [ -r "$pkg_dir" ] && cp -r "$pkg_dir/"* . || { echo "pkg dir $pkg_dir not found"; exit 2; }
   git add *
   git commit --allow-empty -m "$pkg_name:$version"
   git tag "$pkg_name/$version"
