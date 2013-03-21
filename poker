@@ -10,6 +10,7 @@ POKER_WRAPPER=$POKER_SELF_REPO_PATH/poker
 POKER_BIN=$POKER_SELF_REPO_PATH/poker_bin
 
 sync() {
+  OLD_PWD=$PWD
   [ -r $POKER_SELF_REPO_PATH ] || {
     mkdir -p $POKER_SELF_REPO_PATH
     cd "$(dirname $POKER_SELF_REPO_PATH)"
@@ -20,12 +21,13 @@ sync() {
   cd $POKER_SELF_REPO_PATH
   git pull > /dev/null
 
-  [ -r $POKER_BIN ] || {
+  cmp "$WRAPPER_NAME" "$POKER_WRAPPER" > /dev/null || {
     echo "Please upgrade poker in order to continue"
     echo
     echo "cp $POKER_WRAPPER $WRAPPER_NAME"
     exit 1
   }
+  cd $OLD_PWD
 }
 
 sync
