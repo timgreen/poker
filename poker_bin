@@ -107,7 +107,7 @@ cmd_fetch() {
   output="$(readlink -m $3)"
 
   cd "$(repo_path)"
-  git fetch origin "refs/tags/$pkg_name/$version" &> /dev/null
+  git fetch --tags origin "refs/tags/$pkg_name/$version" &> /dev/null
   (( $? != 0 )) && { echo "Can not found package $pkg_name with version $version"; exit 1; }
 
   rm -f "$output"
